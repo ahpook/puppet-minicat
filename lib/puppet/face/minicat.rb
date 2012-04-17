@@ -5,7 +5,7 @@ require 'awesome_print'
 Puppet::Face.define(:minicat, '0.0.1') do
 
   copyright "Apple Inc", 2012
-  license   "Apple Internal Use"
+  license "Apache 2.0"
 
   summary "Make a mini-catalog, to view data-driven template output"
   description <<-EOT
