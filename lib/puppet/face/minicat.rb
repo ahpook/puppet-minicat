@@ -1,6 +1,5 @@
 require 'puppet'
 require 'puppet/face'
-require 'awesome_print'
 
 Puppet::Face.define(:minicat, '0.0.1') do
 
@@ -38,7 +37,7 @@ Puppet::Face.define(:minicat, '0.0.1') do
 
       catalog = Puppet::Resource::Catalog.indirection.find(node.name, :use_node => node)
 
-      print catalog.to_pson
+      puts catalog.to_pson
 
     end
 
