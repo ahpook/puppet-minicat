@@ -46,6 +46,10 @@ copy changes to the puppet modules.  The output is a screenful of json which con
 in debugging: a template-ized puppet.conf which uses node classifier data to set up an `\[environment\]` stanza for
 each of the test branches.
 
+### Requirements
+
+Puppet 2.7.x is required to use the Faces API.
+
 ### Contact
 
 The code lives at [puppet-minicat](https://github.com/ahpook/puppet-minicat), please feel free to fork and 
