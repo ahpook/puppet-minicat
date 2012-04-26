@@ -28,11 +28,15 @@ Puppet::Face.define(:minicat, '0.0.1') do
     end
 
     when_invoked do |options|
-      Puppet[:config] = options[:config] || '/etc/puppet/puppet.conf'
       Puppet.parse_config
+      Puppet.notice "looking up #{options[:node]}..."
       node = Puppet::Node.indirection.find(options[:node])
-      if options[:classlist]
-        node.classes = options[:classlist].split(',')
+      if node
+        if options[:classlist]
+          node.classes = options[:classlist].split(',')
+        end
+      else
+        raise "Couldn't find node #{options[:node]}"
       end
 
       catalog = Puppet::Resource::Catalog.indirection.find(node.name, :use_node => node)
