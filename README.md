@@ -50,6 +50,10 @@ each of the test branches.
 
 Puppet 2.7.x is required to use the Faces API.
 
+Minicat uses [Awesome Print](https://github.com/michaeldv/awesome_print) for pretty-printing the
+catalog data structures and [YAJL ruby](https://github.com/brianmario/yajl-ruby) to pull the catalog
+back into a data structure that AP can deal with.
+
 ### Contact
 
 The code lives at [puppet-minicat](https://github.com/ahpook/puppet-minicat), please feel free to fork and 
