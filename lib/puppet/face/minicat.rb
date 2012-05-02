@@ -1,5 +1,7 @@
 require 'puppet'
 require 'puppet/face'
+require 'awesome_print'
+require 'yajl'
 
 Puppet::Face.define(:minicat, '0.0.1') do
 
@@ -26,6 +28,9 @@ Puppet::Face.define(:minicat, '0.0.1') do
     option "--classlist puppet::class1,puppet::class2" do
       summary "Comma-separated list of classes to include in the compiled catalog (defaults to ENC list if omitted)"
     end
+    option "--contentonly" do
+      summary "Display File resource content in a screen-friendly way, ignoring non-File resources"
+    end
 
     when_invoked do |options|
       Puppet.parse_config
@@ -41,7 +46,24 @@ Puppet::Face.define(:minicat, '0.0.1') do
 
       catalog = Puppet::Resource::Catalog.indirection.find(node.name, :use_node => node)
 
-      puts catalog.to_pson
+      c = Yajl::Parser.parse( catalog.to_pson )
+
+      if options[:contentonly]
+        c["data"]["resources"].each do |res|
+          content = res["parameters"].delete("content") if res["parameters"]
+          if res["type"] == "File" && content
+              filename = res["parameters"]["path"] || res["title"]
+              ap res["file"]
+              ap filename
+              puts content
+              print "----------------------------------\n\n"
+          end
+        end
+      else
+        ap c
+      end
+
+      Puppet.notice "kthxbye"
 
     end
 
