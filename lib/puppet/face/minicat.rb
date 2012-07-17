@@ -31,6 +31,9 @@ Puppet::Face.define(:minicat, '0.0.1') do
     option "--contentonly" do
       summary "Display File resource content in a screen-friendly way, ignoring non-File resources"
     end
+    option "--sorted" do
+      summary "Display the sorted content of (resources, targets, classes, tags, metadata, version), as catalog order can be non-deterministic"
+    end
 
     when_invoked do |options|
       Puppet.parse_config
@@ -59,6 +62,56 @@ Puppet::Face.define(:minicat, '0.0.1') do
               print "----------------------------------\n\n"
           end
         end
+
+      elsif options[:sorted]
+
+        # build up a sorted data structure
+
+        ## resources
+        d = []
+        c["data"]["resources"].each do |res| 
+          if res["title"] =~ /\w\w/
+             d.push(res)
+          end
+        end
+        resources = d.sort_by { |k| k["title"] }
+
+        ## targets
+        e = []
+        c["data"]["edges"].each do |res| 
+          if res["target"] =~ /\w\w/
+             e.push(res)
+          end
+        end
+        targets = e.sort_by { |k| k["target"] }
+
+        ## classes 
+        f = []
+        c["data"]["classes"].each do |res| 
+          if res["classes"] =~ /\w\w/
+             f.push(res)
+          end
+        end
+        classes = f.sort
+
+        ## tags
+        tags = c["data"]["tags"].sort
+        metadata = c["metadata"].sort
+        version = c["data"]["version"]
+
+        print "\n=====  resources\n"
+        ap resources 
+        print "\n=====  targets\n"
+        ap targets 
+        print "\n=====  classes\n"
+        ap classes 
+        print "\n=====  tags\n"
+        ap tags
+        print "\n=====  metadata\n"
+        ap metadata 
+        print "\n=====  version\n"
+        ap version
+      
       else
         ap c
       end
