@@ -31,6 +31,9 @@ Puppet::Face.define(:minicat, '0.0.1') do
     option "--contentonly" do
       summary "Display File resource content in a screen-friendly way, ignoring non-File resources"
     end
+    option "--sorted" do
+      summary "Display most catalog data sorted"
+    end
 
     when_invoked do |options|
       Puppet.parse_config
@@ -45,7 +48,6 @@ Puppet::Face.define(:minicat, '0.0.1') do
       end
 
       catalog = Puppet::Resource::Catalog.indirection.find(node.name, :use_node => node)
-
       c = Yajl::Parser.parse( catalog.to_pson )
 
       if options[:contentonly]
@@ -59,14 +61,52 @@ Puppet::Face.define(:minicat, '0.0.1') do
               print "----------------------------------\n\n"
           end
         end
-      else
-        ap c
-      end
 
-      Puppet.notice "kthxbye"
+      elsif options[:sorted]
 
+       # build up a sorted data structure
+
+       ## resources
+       ## resources are sorted by the attributes (we believe) will always
+       ## be present in any valid resource declaration: title and class. This
+       ## is intended to guarantee sort order for the purpose of comparison
+       resources = c["data"]["resources"].sort { |a,b|
+         akey = "#{a['title']}#{a['type']}"
+         bkey = "#{b['title']}#{b['type']}"
+         akey <=> bkey
+       }
+
+       ## targets
+       targets = c["data"]["edges"].sort_by {
+       |a| "#{a['target']}#{a['source']}"
+       }
+
+       ## classes 
+       classes = c["data"]["classes"].sort
+
+       ## tags
+       tags = c["data"]["tags"].sort
+
+
+       print "\n###############   resources  ###############################\n"
+       ap resources
+
+       print "\n###############   targets    ###############################\n"
+       ap targets
+
+       print "\n###############   classes    ###############################\n"
+       ap classes
+
+       print "\n###############   tags       ###############################\n"
+       ap tags
+
+       print "\n"
+    else
+       ap c
+       Puppet.notice "kthxbye"
     end
 
+  end
   end
 
 end
