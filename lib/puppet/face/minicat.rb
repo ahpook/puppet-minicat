@@ -34,6 +34,9 @@ Puppet::Face.define(:minicat, '0.0.1') do
     option "--sorted" do
       summary "Display the sorted content of (resources, targets, classes, tags, metadata, version), as catalog order can be non-deterministic"
     end
+    option "--sorted" do
+      summary "Display most catalog data sorted"
+    end
 
     when_invoked do |options|
       Puppet.parse_config
@@ -48,7 +51,6 @@ Puppet::Face.define(:minicat, '0.0.1') do
       end
 
       catalog = Puppet::Resource::Catalog.indirection.find(node.name, :use_node => node)
-
       c = Yajl::Parser.parse( catalog.to_pson )
 
       if options[:contentonly]
